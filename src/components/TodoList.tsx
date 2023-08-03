@@ -1,20 +1,18 @@
 import { styled } from "styled-components";
 import Button, { StyleType } from "./Button";
 import { Todo } from "./Main";
+import { useDispatch } from "react-redux";
+import { deleteTodo, switchTodo } from "../redux/modules/todoSlice";
+import { Link } from "react-router-dom";
 
-const TodoList = ({ todos, isDone, setTodos }: { todos: Todo[]; isDone: boolean; setTodos: React.Dispatch<React.SetStateAction<Todo[]>> }) => {
+const TodoList = ({ todos, isDone }: { todos: Todo[]; isDone: boolean }) => {
+  const dispatch = useDispatch();
   const deleteHandler = (id: string) => {
-    const deletedTodos = todos.filter((todo) => todo.id !== id);
-    setTodos(deletedTodos);
+    dispatch(deleteTodo(id));
   };
 
   const isDoneSwitchHandler = (id: string) => {
-    const switchedTodos = todos.map((todo) => {
-      if (todo.id === id) {
-        return { ...todo, isDone: !isDone };
-      } else return todo;
-    });
-    setTodos(switchedTodos);
+    dispatch(switchTodo(id));
   };
 
   return (
@@ -24,8 +22,10 @@ const TodoList = ({ todos, isDone, setTodos }: { todos: Todo[]; isDone: boolean;
         .map((todo: Todo) => {
           return (
             <StTodoCard key={todo.id}>
-              <h4>{todo.title}</h4>
-              <p>{todo.body}</p>
+              <Link to={`${todo.id}`}>
+                <h4>{todo.title}</h4>
+                <p>{todo.body}</p>
+              </Link>
               <StButtonContainer>
                 <Button
                   styleType={StyleType.FORM_DELETE}
@@ -58,6 +58,11 @@ const StTodoCard = styled.div`
   width: 250px;
   margin: 10px;
   padding: 10px;
+
+  & a {
+    text-decoration: none;
+    color: black;
+  }
 `;
 
 const StButtonContainer = styled.div`

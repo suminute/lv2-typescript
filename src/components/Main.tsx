@@ -4,6 +4,9 @@ import TodoList from "./TodoList";
 import Button, { StyleType } from "./Button";
 import InputItem from "./InputItem";
 import { styled } from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/config/configStore";
+import { addTodo } from "../redux/modules/todoSlice";
 
 export interface Todo {
   id: string;
@@ -15,21 +18,11 @@ export interface Todo {
 const Main = () => {
   const [title, setTitle] = useState<string>("");
   const [body, setBody] = useState<string>("");
-  const [todos, setTodos] = useState<Todo[]>([
-    {
-      id: shortid.generate(),
-      title: "리액트 공부하기",
-      body: "리액트 기초를 공부해봅시다.",
-      isDone: false,
-    },
-    {
-      id: shortid.generate(),
-      title: "리액트 공부하기",
-      body: "리액트 기초를 공부해봅시다.",
-      isDone: true,
-    },
-  ]);
   const submitDiasbled = !title || !body;
+
+  // Redux
+  const todos = useSelector((state: RootState) => state.data.todos);
+  const dispatch = useDispatch();
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
@@ -39,7 +32,7 @@ const Main = () => {
       body,
       isDone: false,
     };
-    setTodos((todos) => [...todos, newTodo]);
+    dispatch(addTodo(newTodo));
     setTitle("");
     setBody("");
   };
@@ -63,9 +56,9 @@ const Main = () => {
       </Stform>
       <div>
         <h2>Working... 🔥</h2>
-        <TodoList todos={todos} isDone={false} setTodos={setTodos} />
+        <TodoList todos={todos} isDone={false} />
         <h2>Done...! 🎉</h2>
-        <TodoList todos={todos} isDone={true} setTodos={setTodos} />
+        <TodoList todos={todos} isDone={true} />
       </div>
     </main>
   );
